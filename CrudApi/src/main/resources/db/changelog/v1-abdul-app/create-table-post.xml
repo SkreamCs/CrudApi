@@ -1,0 +1,17 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     <changeSet id="v1.post" author="Abdul">
+          <createTable tableName="post_table">
+         <column name="id" type="int">
+             <constraints primaryKey="true"/>
+         </column>
+              <column name="content" type="varchar(45)"/>
+              <column name="created" type="datetime"/>
+              <column name="updated" type="datetime"/>
+              <column name="post_label" type="json"/>
+              <column name="PostStatus" type="varchar(45)"/>
+     </createTable>
+     </changeSet>
+</databaseChangeLog>
