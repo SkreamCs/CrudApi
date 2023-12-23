@@ -1,100 +1,143 @@
 package abdu.tumg.repository.repositoryImpl;
 
-import abdu.tumg.model.Label;
-import abdu.tumg.model.Post;
-import abdu.tumg.model.PostStatus;
-import abdu.tumg.model.Writer;
+import abdu.tumg.model.*;
+import abdu.tumg.repository.PostRepository;
 import abdu.tumg.repository.WriterRepository;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.nio.file.Watchable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static abdu.tumg.App.*;
+import static abdu.tumg.utils.JdbcUtils.*;
 
 public class JdbcWriterRepositoryImpl implements WriterRepository {
-    private final Gson GSON = new Gson();
-    @Override
-    public Writer getByID(Integer integer) throws SQLException {
-        return getAll().stream()
-                .filter(n -> n.getId() == integer)
-                .findFirst()
-                .orElse(null);
-    }
 
-    @Override
-    public void update(Writer writer) throws SQLException {
-        Connection connection = DriverManager.getConnection(URL_BASE, USER, PASSWORD);
-        String sqlQuery = "UPDATE writer_table SET firstName = ?, lastName = ?, writer_post = ?, PostStatus = ?  WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-        preparedStatement.setString(1, writer.getFirstName());
-        preparedStatement.setString(2, writer.getLastName());
-        preparedStatement.setString(3, GSON.toJson(writer.getPostWriter()));
-        preparedStatement.setString(4, String.valueOf(PostStatus.UNDER_REVIEW));
-        preparedStatement.setInt(5, writer.getId());
-        preparedStatement.executeUpdate();
-        connection.close();
-        preparedStatement.close();
-    }
+    JdbcPostRepositoryImpl jdbcPostRepository;
 
-    @Override
-    public void delete(Integer integer) throws SQLException {
-        Writer writer = getByID(integer);
-        writer.setPostStatus(PostStatus.DELETED);
-        Connection connection = DriverManager.getConnection(URL_BASE, USER, PASSWORD);
-        String sqlQuery = "UPDATE writer_table SET PostStatus = ? WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-        preparedStatement.setString(1, String.valueOf(writer.getPostStatus()));
-        preparedStatement.setInt(2, writer.getId());
-        preparedStatement.executeUpdate();
-        connection.close();
-        preparedStatement.close();
+    public JdbcWriterRepositoryImpl(JdbcPostRepositoryImpl jdbcPostRepository) {
+        this.jdbcPostRepository = jdbcPostRepository;
     }
-
     @Override
-    public void save(Writer writer) throws SQLException {
-        Connection connection = DriverManager.getConnection(URL_BASE, USER, PASSWORD);
-        String sqlQuery = "SELECT * FROM writer_table";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-        ResultSet resultSet = preparedStatement.executeQuery(sqlQuery);
-        int max = 0;
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            if (id > max) max = id;
+    public Writer getByID(Integer integer) {
+        String SQL = "SELECT * from writers where id = ?";
+        try (PreparedStatement preparedStatement = getPreparedStatement(SQL);) {
+            preparedStatement.setInt(1, integer);
+            ResultSet set = preparedStatement.executeQuery();
+            if (set.next()) {
+                return mapResultSetToWriter(set);
+            }
+        } catch (SQLException e) {
+            e.getErrorCode();
+        } finally {
+            closeConnect();
         }
-        sqlQuery = "INSERT INTO writer_table(id, firstName, lastName, writer_post, PostStatus) VALUES (?, ?, ?, ?, ?)";
-        preparedStatement = connection.prepareStatement(sqlQuery);
-        preparedStatement.setInt(1, max + 1);
-        preparedStatement.setString(2, writer.getFirstName());
-        preparedStatement.setString(3, writer.getLastName());
-        preparedStatement.setString(4, GSON.toJson(writer.getPostWriter()));
-        preparedStatement.setString(5, writer.getPostStatus().toString());
-        preparedStatement.executeUpdate();
-        connection.close();
-        preparedStatement.close();
+        return null;
+    }
+
+    private Writer mapResultSetToWriter(ResultSet resultSet) {
+        try {
+            Writer writer = new Writer(resultSet.getString("firstName"), resultSet.getString("lastName"), Status.valueOf(resultSet.getString("status")), getWriterPosts(resultSet));
+            writer.setId(resultSet.getInt("id"));
+            return writer;
+        } catch (SQLException e) {
+            e.getErrorCode();
+        }
+        return null;
     }
 
     @Override
-    public List<Writer> getAll() throws SQLException {
-        Connection connection = DriverManager.getConnection(URL_BASE, USER, PASSWORD);
-        Statement statement = connection.createStatement();
-        String sqlQuery = "SELECT * FROM writer_table";
-        ResultSet set = statement.executeQuery(sqlQuery);
-        List<Writer> writers = new ArrayList<>();
-        while (set.next()) {
-            int id = set.getInt("id");
-            String firstName = set.getString("firstName");
-            String lastName = set.getString("lastName");
-            List<Post> posts = GSON.fromJson(set.getString("writer_post"), new TypeToken<List<Post>>(){}.getType());
-            String postString = set.getString("PostStatus");
-            PostStatus postStatus = PostStatus.valueOf(postString);
+    public void update(Writer writer) {
+        String sqlQuery = "UPDATE writers SET firstName = ?, lastName = ?, status = ?  WHERE id = ?";
+        try (PreparedStatement preparedStatement = getPreparedStatement(sqlQuery)) {
+            preparedStatement.setString(1, writer.getFirstName());
+            preparedStatement.setString(2, writer.getLastName());
+            preparedStatement.setString(3, String.valueOf(Status.UNDER_REVIEW));
+            preparedStatement.setInt(4, writer.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.getErrorCode();
+        } finally {
+            closeConnect();
+        }
+    }
 
-            Writer writer = new Writer(firstName, lastName, postStatus, posts);
-            writer.setId(id);
-            writers.add(writer);
+    @Override
+    public void delete(Integer integer) {
+        Writer writer = getByID(integer);
+        writer.setStatus(Status.DELETED);
+        String sqlQuery = "UPDATE writers SET status = ? WHERE id = ?";
+        try (PreparedStatement preparedStatement = getPreparedStatement(sqlQuery)) {
+            preparedStatement.setString(1, String.valueOf(writer.getStatus()));
+            preparedStatement.setInt(2, writer.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.getErrorCode();
+        } finally {
+            closeConnect();
+        }
+    }
+
+    @Override
+    public void save(Writer writer) {
+        String sqlQuery = "INSERT INTO writers(firstName, lastName, status) VALUES (?, ?, ?)";
+        try (PreparedStatement preparedStatement = getPreparedStatementWithKeys(sqlQuery)) {
+            preparedStatement.setString(1, writer.getFirstName());
+            preparedStatement.setString(2, writer.getLastName());
+            preparedStatement.setString(3, writer.getStatus().toString());
+            preparedStatement.executeUpdate();
+            ResultSet set = preparedStatement.getGeneratedKeys();
+            int id = 0;
+            if (set.next()) {
+                id = set.getInt(1);
+            }
+            for (Post post : writer.getPosts()) {
+                  jdbcPostRepository.saveWithKey(post, id);
+            }
+            writer.setId(set.getInt(1));
+        } catch(SQLException e) {
+        e.getErrorCode();
+    } finally {
+            closeConnect();
+        }
+
+}
+
+
+private List<Post> getWriterPosts(ResultSet set) {
+    String SQL = "select posts.* from posts " +
+            "inner join writers on writers.id = writer_id " +
+            "where writers.id = ?";
+    try (PreparedStatement preparedStatement = getPreparedStatement(SQL)) {
+        preparedStatement.setInt(1, set.getInt("id"));
+        ResultSet setPost = preparedStatement.executeQuery();
+        List<Post> posts = new ArrayList<>();
+        while (setPost.next()) {
+            posts.add(jdbcPostRepository.mapResultSetToPost(setPost));
+        }
+        return posts;
+    } catch (SQLException e) {
+        e.getErrorCode();
+    } finally {
+        closeConnect();
+    }
+    return null;
+ }
+    @Override
+    public List<Writer> getAll() {
+        List<Writer> writers = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM writers";
+        try (PreparedStatement preparedStatement = getPreparedStatement(sqlQuery)) {
+            ResultSet set = preparedStatement.executeQuery(sqlQuery);
+            while (set.next()) {
+                Writer writer = mapResultSetToWriter(set);
+                writers.add(writer);
+            }
+        } catch (SQLException e) {
+            e.getErrorCode();
+        } finally {
+            closeConnect();
         }
         return writers;
     }

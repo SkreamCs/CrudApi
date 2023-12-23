@@ -6,22 +6,22 @@ public class Writer {
     private int id;
     private String firstName;
     private String lastName;
-    private PostStatus postStatus;
-    private List<Post> postWriter;
+    private Status status;
+    private List<Post> posts;
 
-    public Writer(String firstName, String lastName, PostStatus postStatus, List<Post> postWriter) {
+    public Writer(String firstName, String lastName, Status status, List<Post> postWriter) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.postStatus = postStatus;
-        this.postWriter = postWriter;
+        this.status = status;
+        this.posts = postWriter;
     }
 
-    public List<Post> getPostWriter() {
-        return postWriter;
+    public List<Post> getPosts() {
+        return posts;
     }
 
-    public void setPostWriter(List<Post> postWriter) {
-        this.postWriter = postWriter;
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 
     public void setId(int id) {
@@ -36,8 +36,8 @@ public class Writer {
         this.lastName = lastName;
     }
 
-    public void setPostStatus(PostStatus postStatus) {
-        this.postStatus = postStatus;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public int getId() {
@@ -51,8 +51,8 @@ public class Writer {
     public String getLastName() {
         return lastName;
     }
-    public PostStatus getPostStatus() {
-        return postStatus;
+    public Status getStatus() {
+        return status;
     }
 
     @Override
@@ -61,8 +61,8 @@ public class Writer {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", postStatus=" + postStatus +
-                ", postWriter=" + postWriter +
+                ", status=" + status +
+                ", postWriter=" + posts +
                 '}';
     }
 }

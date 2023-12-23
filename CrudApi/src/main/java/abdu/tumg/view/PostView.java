@@ -1,12 +1,11 @@
 package abdu.tumg.view;
 
-import abdu.tumg.controller.Controller;
 import abdu.tumg.controller.PostController;
 import abdu.tumg.model.Label;
 import abdu.tumg.model.Post;
 import abdu.tumg.model.PostStatus;
+import abdu.tumg.model.Status;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -65,8 +64,7 @@ public class PostView {
                 System.out.println();
                 System.out.println("Создание обьекта номер " + i);
                 System.out.println("Введите name для Label");
-                Label label = new Label(SCANNER.next(), PostStatus.ACTIVE);
-                label.setId(i);
+                Label label = new Label(SCANNER.next(), Status.ACTIVE);
                 collectLabel.add(label);
             }
             System.out.println("Обьект post успешно создан id: " + postController.createObject(content,created,updated,collectLabel,PostStatus.ACTIVE).getId());
@@ -81,8 +79,7 @@ public class PostView {
                         "1.Изменить content\n"
                                 + "2.Изменить created\n"
                                 + "3.Изменить updated\n"
-                                + "4.Изменить коллекцию Label\n"
-                                + "5.Сохранить изменения и выйти");
+                                + "4.Сохранить изменения и выйти");
                 int paragraph = SCANNER.nextInt();
                 switch (paragraph) {
                     case 1: {
@@ -101,14 +98,6 @@ public class PostView {
                         break;
                     }
                     case 4: {
-                        System.out.println("Выберите номер обьекта который хотите изменить:");
-                        postUpgrade.getPostLabel().stream().forEach(System.out::println);
-                        int number = SCANNER.nextInt() - 1;
-                        System.out.println("Введите новое значение для name");
-                        postUpgrade.getPostLabel().set(number, new Label(SCANNER.next(), PostStatus.UNDER_REVIEW));
-                        break;
-                    }
-                    case 5: {
                         System.out.println("id " + postController.editObject(postUpgrade).getId());
                         return;
                     }

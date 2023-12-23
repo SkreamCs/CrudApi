@@ -2,10 +2,7 @@ package abdu.tumg;
 
 import abdu.tumg.controller.PostController;
 import abdu.tumg.controller.WriterController;
-import abdu.tumg.model.Label;
-import abdu.tumg.model.Post;
-import abdu.tumg.model.PostStatus;
-import abdu.tumg.model.Writer;
+import abdu.tumg.model.*;
 import abdu.tumg.repository.WriterRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,22 +27,22 @@ public class WriterServiceTest {
     }
     @Test
     public void createTest() throws SQLException {
-        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
-        Writer writer = writerController.createObject("name", "last", PostStatus.ACTIVE, list);
+        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
+        Writer writer = writerController.createObject("name", "last", Status.ACTIVE, list);
 
         verify(writerRepository, times(1)).save(writer);
 
     }
     @Test
-    public void updateTest() throws SQLException {
-        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
-        Writer writer = writerController.createObject("name", "last", PostStatus.ACTIVE, list);
+    public void updateTest()  {
+        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
+        Writer writer = writerController.createObject("name", "last", Status.ACTIVE, list);
         writer.setId(1);
 
         when(writerRepository.getByID(1)).thenReturn(writer);
 
-        List<Post> listUpgrade = List.of(new Post("hard-easy","2019-12-1 19:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
-        Writer writerUpgrade = writerController.createObject("names", "last", PostStatus.ACTIVE, listUpgrade);
+        List<Post> listUpgrade = List.of(new Post("hard-easy","2019-12-1 19:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
+        Writer writerUpgrade = writerController.createObject("names", "last", Status.ACTIVE, listUpgrade);
 
         writerController.editObject(writerUpgrade);
 
@@ -53,9 +50,9 @@ public class WriterServiceTest {
 
     }
     @Test
-    public void getByIdTest() throws SQLException {
-        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
-        Writer writer = writerController.createObject("name", "last", PostStatus.ACTIVE, list);
+    public void getByIdTest()  {
+        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
+        Writer writer = writerController.createObject("name", "last", Status.ACTIVE, list);
         writer.setId(1);
 
         when(writerRepository.getByID(1)).thenReturn(writer);
@@ -66,9 +63,9 @@ public class WriterServiceTest {
         assertEquals(writerExpected.toString(), writer.toString());
     }
     @Test
-    public void deleteTest() throws SQLException {
-        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
-        Writer writer = writerController.createObject("name", "last", PostStatus.ACTIVE, list);
+    public void deleteTest()  {
+        List<Post> list = List.of(new Post("hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
+        Writer writer = writerController.createObject("name", "last", Status.ACTIVE, list);
         writer.setId(1);
 
         when(writerRepository.getByID(1)).thenReturn(writer);
@@ -78,8 +75,8 @@ public class WriterServiceTest {
         verify(writerRepository, times(1)).delete(1);
     }
     @Test
-    public void getAllTest() throws SQLException {
-        List<Writer> posts = List.of(new Writer("name", "last", PostStatus.ACTIVE, List.of( new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post( "hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE))));
+    public void getAllTest()  {
+        List<Writer> posts = List.of(new Writer("name", "last", Status.ACTIVE, List.of( new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post( "hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE))));
 
         when(writerRepository.getAll()).thenReturn(posts);
 

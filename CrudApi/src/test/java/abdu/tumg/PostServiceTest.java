@@ -5,6 +5,7 @@ import abdu.tumg.controller.PostController;
 import abdu.tumg.model.Label;
 import abdu.tumg.model.Post;
 import abdu.tumg.model.PostStatus;
+import abdu.tumg.model.Status;
 import abdu.tumg.repository.LabelRepository;
 import abdu.tumg.repository.PostRepository;
 import org.junit.Before;
@@ -29,21 +30,21 @@ public class PostServiceTest {
         postController = new PostController(postRepository);
     }
     @Test
-    public void createTest() throws SQLException {
+    public void createTest()  {
 
-        Post post = postController.createObject("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE);
+        Post post = postController.createObject("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE);
 
         verify(postRepository, times(1)).save(post);
 
     }
     @Test
     public void updateTest() throws SQLException {
-        Post post = new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE);
+        Post post = new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE);
         post.setId(1);
 
         when(postRepository.getByID(1)).thenReturn(post);
 
-        Post postUpdate = new Post("Misha","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.UNDER_REVIEW);
+        Post postUpdate = new Post("Misha","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.UNDER_REVIEW);
         postUpdate.setId(1);
 
         postController.editObject(postUpdate);
@@ -53,7 +54,7 @@ public class PostServiceTest {
     }
     @Test
     public void getByIdTest() throws SQLException {
-        Post post = new Post("easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE);
+        Post post = new Post("easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE);
         post.setId(1);
 
         when(postRepository.getByID(1)).thenReturn(post);
@@ -65,7 +66,7 @@ public class PostServiceTest {
     }
     @Test
     public void deleteTest() throws SQLException {
-        Post post = new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE);
+        Post post = new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE);
         post.setId(1);
 
         when(postRepository.getByID(1)).thenReturn(post);
@@ -76,7 +77,7 @@ public class PostServiceTest {
     }
     @Test
     public void getAllTest() throws SQLException {
-        List<Post> posts = List.of( new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE), new Post( "hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", PostStatus.ACTIVE)), PostStatus.ACTIVE));
+        List<Post> posts = List.of( new Post("hard","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE), new Post( "hard-easy","2019-12-1 20:00:00","2019-12-1 20:00:00", List.of(new Label("Jorg", Status.ACTIVE)), PostStatus.ACTIVE));
 
         when(postRepository.getAll()).thenReturn(posts);
 

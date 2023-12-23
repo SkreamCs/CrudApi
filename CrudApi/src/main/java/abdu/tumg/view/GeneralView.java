@@ -7,18 +7,21 @@ import abdu.tumg.repository.repositoryImpl.JdbcLabelRepositoryImpl;
 import abdu.tumg.repository.repositoryImpl.JdbcPostRepositoryImpl;
 import abdu.tumg.repository.repositoryImpl.JdbcWriterRepositoryImpl;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
-import static abdu.tumg.repository.GenericRepository.JDBC_DRIVER;
-
 public class GeneralView {
+    String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     public void startApp() {
         Scanner scanner = new Scanner(System.in);
-        LabelController labelController = new LabelController(new JdbcLabelRepositoryImpl());
+        JdbcLabelRepositoryImpl labelRepository = new JdbcLabelRepositoryImpl();
+        JdbcPostRepositoryImpl postRepository = new JdbcPostRepositoryImpl();
+        JdbcWriterRepositoryImpl writerRepository = new JdbcWriterRepositoryImpl(postRepository);
+        LabelController labelController = new LabelController(labelRepository);
         LabelView labelView = new LabelView(labelController);
-        PostController postController = new PostController(new JdbcPostRepositoryImpl());
+        PostController postController = new PostController(postRepository);
         PostView postView = new PostView(postController);
-        WriterController writerController = new WriterController(new JdbcWriterRepositoryImpl());
+        WriterController writerController = new WriterController(writerRepository);
         WriterView writerView = new WriterView(writerController);
         System.out.println("Запуск CRUD приложения...");
         while (true) {

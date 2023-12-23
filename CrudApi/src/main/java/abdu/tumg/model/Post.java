@@ -7,14 +7,14 @@ public class Post {
     private String content;
     private String created;
     private String updated;
-    private List<Label> postLabel;
+    private List<Label> labels;
     private PostStatus postStatus;
 
-    public Post(String content, String created, String updated, List<Label> postLabel, PostStatus postStatus) {
+    public Post(String content, String created, String updated, List<Label> labels, PostStatus postStatus) {
         this.content = content;
         this.created = created;
         this.updated = updated;
-        this.postLabel = postLabel;
+        this.labels = labels;
         this.postStatus = postStatus;
     }
 
@@ -34,8 +34,8 @@ public class Post {
         this.updated = updated;
     }
 
-    public void setPostLabel(List<Label> postLabel) {
-        this.postLabel = postLabel;
+    public void setLabels(List<Label> labels) {
+        this.labels = labels;
     }
 
     public void setPostStatus(PostStatus postStatus) {
@@ -58,8 +58,8 @@ public class Post {
         return updated;
     }
 
-    public List<Label> getPostLabel() {
-        return postLabel;
+    public List<Label> getLabels() {
+        return labels;
     }
 
     public PostStatus getPostStatus() {
@@ -73,7 +73,7 @@ public class Post {
                 ", content='" + content + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
-                ", postLabel=" + postLabel +
+                ", postLabel=" + labels +
                 ", postStatus=" + postStatus +
                 '}';
     }

@@ -1,11 +1,10 @@
 package abdu.tumg.view;
 
-import abdu.tumg.controller.Controller;
 import abdu.tumg.controller.LabelController;
 import abdu.tumg.model.Label;
 import abdu.tumg.model.PostStatus;
+import abdu.tumg.model.Status;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class LabelView {
@@ -50,7 +49,7 @@ public class LabelView {
     }
     public void createLabelView() {
         System.out.println("Введите name для Label");
-        System.out.println("Обьект Label успешно создан id: " + labelController.createObject(SCANNER.next(), PostStatus.ACTIVE).getId());
+        System.out.println("Обьект Label успешно создан id: " + labelController.createObject(SCANNER.next(), Status.ACTIVE).getId());
     }
     public void updateView() {
         labelController.getAllLabel().stream().forEach(System.out::println);

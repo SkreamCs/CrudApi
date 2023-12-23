@@ -1,13 +1,8 @@
 package abdu.tumg.view;
 
-import abdu.tumg.controller.Controller;
 import abdu.tumg.controller.WriterController;
-import abdu.tumg.model.Label;
-import abdu.tumg.model.Post;
-import abdu.tumg.model.PostStatus;
-import abdu.tumg.model.Writer;
+import abdu.tumg.model.*;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -74,7 +69,7 @@ public class WriterView {
                 System.out.println();
                 System.out.println("Создание обьекта номер " + j);
                 System.out.println("Введите name для Label");
-                Label label = new Label(SCANNER.next(), PostStatus.ACTIVE);
+                Label label = new Label(SCANNER.next(), Status.ACTIVE);
                 label.setId(j);
                 collectLabel.add(label);
             }
@@ -83,7 +78,7 @@ public class WriterView {
             post.setId(i);
             list.add(post);
         }
-        int id = writerController.createObject(firstName,lastName,PostStatus.ACTIVE,list).getId();
+        int id = writerController.createObject(firstName,lastName,Status.ACTIVE,list).getId();
         System.out.println("Обьект writer успешно создан id: " + id);
     }
     public void updateView() {
@@ -95,8 +90,7 @@ public class WriterView {
             System.out.println(
                     "1.Изменить firstName\n" +
                             "2.Изменить lastName\n" +
-                            "3.Изменить коллекцию типа Post\n" +
-                            "4.Выйти из режима редактирования\n" +
+                            "3.Выйти из режима редактирования\n" +
                             "Выберите пункт который хотите изменить");
             int paragraph = SCANNER.nextInt();
             switch (paragraph) {
@@ -111,53 +105,6 @@ public class WriterView {
                     break;
                 }
                 case 3: {
-                    writerUpgrade.getPostWriter().stream().forEach(System.out::println);
-                    System.out.println("Введите id сущности которую хотите изменить");
-                    int index = SCANNER.nextInt() - 1;
-                    Post postUpgrade = writerUpgrade.getPostWriter().get(index);
-                    boolean mark2 = true;
-                    while (mark2) {
-                        System.out.println("Выберите нужный пункт");
-                        System.out.println(
-                                "1.Изменить content\n"
-                                        + "2.Изменить created\n"
-                                        + "3.Изменить updated\n"
-                                        + "4.Изменить коллекцию Label\n"
-                                        + "5.Сохранить изменения и выйти");
-                        int paragraph2 = SCANNER.nextInt();
-                        switch (paragraph2) {
-                            case 1: {
-                                System.out.println("Введите новой значение для content");
-                                postUpgrade.setContent(SCANNER.next());
-                                break;
-                            }
-                            case 2: {
-                                System.out.println("Введите новое значение для свойства created:");
-                                postUpgrade.setCreated(SCANNER.next());
-                                break;
-                            }
-                            case 3: {
-                                System.out.println("Введите новое значение для updated:");
-                                postUpgrade.setUpdated(SCANNER.next());
-                                break;
-                            }
-                            case 4: {
-                                System.out.println("Выберите номер обьекта который хотите изменить:");
-                                postUpgrade.getPostLabel().stream().forEach(System.out::println);
-                                int number = SCANNER.nextInt() - 1;
-                                System.out.println("Введите новое значение для name");
-                                postUpgrade.getPostLabel().set(number, new Label(SCANNER.next(), PostStatus.UNDER_REVIEW));
-                                break;
-                            }
-                            case 5: {
-                                mark2 = false;
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-                case 4: {
                     System.out.println("id: " + writerController.editObject(writerUpgrade).getId());
                     return;
                 }

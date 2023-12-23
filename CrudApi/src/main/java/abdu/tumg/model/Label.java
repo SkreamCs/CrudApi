@@ -1,13 +1,14 @@
 package abdu.tumg.model;
 
+
 public class Label {
     private String name;
     private int id;
-    private PostStatus postStatus;
+    private Status status;
 
-    public Label(String name, PostStatus postStatus) {
+    public Label(String name, Status status) {
         this.name = name;
-        this.postStatus = postStatus;
+        this.status = status;
     }
 
     public int getId() {
@@ -18,8 +19,8 @@ public class Label {
         return name;
     }
 
-    public PostStatus getPostStatus() {
-        return postStatus;
+    public Status getStatus() {
+        return status;
     }
 
     public void setId(int id) {
@@ -30,8 +31,8 @@ public class Label {
         this.name = name;
     }
 
-    public void setPostStatus(PostStatus postStatus) {
-        this.postStatus = postStatus;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class Label {
         return "Label{" +
                 "name='" + name + '\'' +
                 ", id=" + id +
-                ", postStatus=" + postStatus +
+                ", status=" + status +
                 '}';
     }
 }
